@@ -1,0 +1,62 @@
+%html
+  %body
+    %h2 Gradesource Uploader
+    %form(method="post" enctype='multipart/form-data')
+      %select{:name => "function"}
+        %option{:value => "1"} Upload Scores by Email
+        %option{:value => "2"} Upload Scores by PID
+        %option{:value => "3"} Download Email/Name to CSV
+        %option{:value => "4"} Download Name/PID to CSV
+      %br
+      Login:
+      %input(type='text' name='login')
+      %br
+      Password:
+      %input(type='password' name='password')
+      %br
+      Course ID:
+      %input(type='text' name='courseID')
+      %br
+      Assignment ID:
+      %input(type='text' name='assignmentID')
+      %br
+      CSV File:
+      %input(type='file' name='csvfile')
+      %br
+      %input(type='submit' value='Submit')
+    %h4 Usage:
+    %h5 From the dropdown menu on top, chose your option for Gradesource Uploader
+    %h5 Then, input your Login, Password, and Course ID
+    %h5 If you want to upload scores to Gradesource, Input the Assignment ID as well and chose the CSV File
+    %h5 Otherwise, you can leave those blank!
+    %br
+    %h4 CSV file format:
+    %a{:href => "https://github.com/chushao/Gradesource-Uploader/blob/master/sample.csv" } Check this out for samples of CSV file
+    %br
+    %a{:href => "https://github.com/chushao/Gradesource-Uploader" } This is the underlying gradesource script
+    %br
+    %h3 Finding CourseID and AssignmentID:
+    %h4 To find the course ID:
+    %h5 Login to Gradesource.
+    %h5 Click on edit course.
+    %h5 In the URL it should be https://www.gradesource.com/editcourse.asp?id=XXXXX
+    %h5 the number after id= is your course ID
+
+    %h4 To find the assignment ID:
+    %h5 Login to Gradesource.
+    %h5 Click on Scores.
+    %h5 Find the Assignment that you would like to modify.
+    %h5 In the URL it should be https://www.gradesource.com/editscores1.asp?id=XXXXXX
+    %h5 the number after id= is your assignment ID
+
+
+  #footer
+    .container
+      %p.muted.credit
+        Website and program written by
+        %a{:href => "http://churenshao.com"} Chu Shao.
+        Source code at
+        = succeed "." do
+          %a{:href => "https://github.com/chushao/Gradesource-Uploader---GUI" } Github
+
+    

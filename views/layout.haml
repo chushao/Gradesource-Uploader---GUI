@@ -1,0 +1,11 @@
+!!!
+%html{:lang => "en"}
+  %head{:profile => "http://w3.org/2005/10/profile"}
+    %link{:href => "/styles/bootstrap.min.css", :rel => "stylesheet", :type => "text/css"}/
+    %link{:href => "/styles/bootstrap-responsive.min.css", :rel => "stylesheet", :type => "text/css"}/
+    %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js", :type => "application/javascript"}
+    %script{:src => "/js/bootstrap.min.js", :type => "application/javascript"}
+    %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
+  %body
+    .container
+      = yield

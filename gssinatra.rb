@@ -1,0 +1,93 @@
+# Chu Shao
+# Jan 21st, 2013
+# Gradesource Sinatra
+# A Webbased uploader for the gradesource script
+
+
+require 'sinatra'
+require 'rupy'
+require 'net/http'
+require 'open-uri'
+require 'zip/zip'
+require 'haml'
+
+# Updates to the most recent Gradesource script from Github
+def updateGradesource 
+  open('pythongradesource.zip', 'wb') do |fo|
+    puts 'Downloading Gradesource Script from github...'
+    fo.print open('https://github.com/chushao/Gradesource-Uploader/archive/master.zip').read
+  end
+  Zip::ZipFile.open('pythongradesource.zip') { |zip_file|
+    zip_file.each { |f|
+      f_path=File.join('./', f.name)
+      zip_file.extract(f, f_path) { true }
+    }
+  }
+end
+
+# use a Python interpreter to do stuff.... because python FTW
+def gradeSource(ver, login, courseID, assignmentID, password)
+  updateGradesource
+  Rupy.start
+  #Requires an adjustment to the library path
+  sys = Rupy.import 'sys'
+  p sys.path.append("./Gradesource-Uploader-master/")
+  gs = Rupy.import 'gradesourceuploader'
+  puts "about to upload"
+  if ver == "1"
+    p gs.updateScoresByEmailGUI(login, courseID, assignmentID, './scores.csv', password)
+  end
+  if ver == "2"
+    p gs.updateScoresByPIDGUI(login, courseID, assignmentID, './scores.csv', password)
+  end 
+  if ver == "3" 
+    p gs.downloadEmailGUI(login, courseID, password)
+  end
+  if ver == "4"  
+    p gs.downloadiClickerGUI(login, courseID, password)
+  end
+  Rupy.stop
+end
+
+get '/' do
+  haml :index
+end
+
+post '/' do
+  upload =  params['csvfile']
+  login = params['login']
+  password = params['password']
+  courseID = params['courseID']
+  assignmentID = params['assignmentID']
+  return %[No username inputted. <a href="/">Try again?</a>] if login == ''
+  return %[No password inputted. <a href="/">Try again?</a>] if password == ''
+  return %[No courseID inputted. <a href="/">Try again?</a>] if courseID == ''
+  if params[:function] == "1"
+    return %[No file uploaded. <a href="/">Try again?</a>] if not upload
+    return %[No assignmentID inputted. <a href="/">Try again?</a>] if assignmentID == ''
+    File.open('./scores.csv', "w") do |f|
+      f.write(params['csvfile'][:tempfile].read)
+    end
+    gradeSource('1', login, courseID, assignmentID, password)
+    return %[CSV has been imported into Gradesource. Please go to <a href="http://gradesource.com"> Gradesource </a> to confirm]
+  end
+  if params[:function] == "2"
+    return %[No file uploaded. <a href="/">Try again?</a>] if not upload
+    return %[No assignmentID inputted. <a href="/">Try again?</a>] if assignmentID == ''
+    File.open('./scores.csv', "w") do |f|
+      f.write(params['csvfile'][:tempfile].read)
+    end
+    gradeSource('2', login, courseID, assignmentID, password)
+    return %[CSV has been imported into Gradesource. Please go to <a href="http://gradesource.com"> Gradesource </a> to confirm]
+  end
+  if params[:function] == "3"
+    gradeSource('3', login, courseID, "null", password)
+    send_file "./iClickerRoster.csv", :filename => 'iClickerRoster.csv', :type => 'Application/octet-stream'
+    return %[Name/Email file downloaded. <a href="/">Return?</a>]
+  end
+  if params[:function] == "4"
+    gradeSource('4', login, courseID, "null", password)
+    send_file "./iClickerRoster.csv", :filename => 'iClickerRoster.csv', :type => 'Application/octet-stream'
+    return %[Name/PID file downloaded. <a href="/">Return?</a>]
+  end
+end
