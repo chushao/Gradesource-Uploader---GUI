@@ -34,6 +34,10 @@ def gradeSource(ver, login, courseID, assignmentID, password)
   p sys.path.append("./Gradesource-Uploader-master/")
   gs = Rupy.import 'gradesourceuploader'
   puts "about to upload"
+  std_out = STDOUT.clone
+  $stdout.reopen("my.log", "w")
+  $stdout.sync = true
+  $stderr.reopen($stdout)
   if ver == "1"
     p gs.updateScoresByEmailGUI(login, courseID, assignmentID, './scores.csv', password)
   end
@@ -47,6 +51,9 @@ def gradeSource(ver, login, courseID, assignmentID, password)
     p gs.downloadiClickerGUI(login, courseID, password)
   end
   Rupy.stop
+  $stdout.reopen(std_out)
+  $stdout.sync = true
+  $stderr.reopen($stdout)
 end
 
 get '/' do
@@ -69,7 +76,7 @@ post '/' do
       f.write(params['csvfile'][:tempfile].read)
     end
     gradeSource('1', login, courseID, assignmentID, password)
-    return %[CSV has been imported into Gradesource. Please go to <a href="http://gradesource.com"> Gradesource </a> to confirm]
+    redirect "/logs"
   end
   if params[:function] == "2"
     return %[No file uploaded. <a href="/">Try again?</a>] if not upload
@@ -78,16 +85,22 @@ post '/' do
       f.write(params['csvfile'][:tempfile].read)
     end
     gradeSource('2', login, courseID, assignmentID, password)
-    return %[CSV has been imported into Gradesource. Please go to <a href="http://gradesource.com"> Gradesource </a> to confirm]
+    redirect "/logs"
   end
   if params[:function] == "3"
     gradeSource('3', login, courseID, "null", password)
     send_file "./iClickerRoster.csv", :filename => 'iClickerRoster.csv', :type => 'Application/octet-stream'
-    return %[Name/Email file downloaded. <a href="/">Return?</a>]
+    redirect "/logs"
   end
   if params[:function] == "4"
     gradeSource('4', login, courseID, "null", password)
     send_file "./iClickerRoster.csv", :filename => 'iClickerRoster.csv', :type => 'Application/octet-stream'
-    return %[Name/PID file downloaded. <a href="/">Return?</a>]
+    redirect "/logs"
   end
+end
+
+get '/logs' do
+  results = File.read('./my.log')
+  @logs = results
+  haml :logs
 end
