@@ -89,7 +89,7 @@ post '/' do
   end
   if params[:function] == "3"
     gradeSource('3', login, courseID, "null", password)
-    send_file "./iClickerRoster.csv", :filename => 'iClickerRoster.csv', :type => 'Application/octet-stream'
+    send_file "./Roster.csv", :filename => 'Roster.csv', :type => 'Application/octet-stream'
     redirect "/logs"
   end
   if params[:function] == "4"
