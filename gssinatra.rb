@@ -26,7 +26,7 @@ def updateGradesource
 end
 
 # use a Python interpreter to do stuff.... because python FTW
-def gradeSource(ver, login, courseID, assignmentID, password)
+def gradeSource(ver, login, courseID, assignmentID, password, overwrite)
   updateGradesource
   Rupy.start
   #Requires an adjustment to the library path
@@ -39,10 +39,18 @@ def gradeSource(ver, login, courseID, assignmentID, password)
   $stdout.sync = true
   $stderr.reopen($stdout)
   if ver == "1"
-    p gs.updateScoresByEmailGUI(login, courseID, assignmentID, './scores.csv', password)
+    if overwrite == "0"
+      p gs.updateScoresByEmailGUI(login, courseID, assignmentID, './scores.csv', password, '0')
+    else
+      p gs.updateScoresByEmailGUI(login, courseID, assignmentID, './scores.csv', password, '1')
+    end
   end
   if ver == "2"
-    p gs.updateScoresByPIDGUI(login, courseID, assignmentID, './scores.csv', password)
+    if overwrite == "0"
+      p gs.updateScoresByPIDGUI(login, courseID, assignmentID, './scores.csv', password, '0')
+    else
+      p gs.updateScoresByPIDGUI(login, courseID, assignmentID, './scores.csv', password, '1')
+    end
   end 
   if ver == "3" 
     p gs.downloadEmailGUI(login, courseID, password)
@@ -75,7 +83,11 @@ post '/' do
     File.open('./scores.csv', "w") do |f|
       f.write(params['csvfile'][:tempfile].read)
     end
-    gradeSource('1', login, courseID, assignmentID, password)
+    if params[:overwrite] == "0"
+      gradeSource('1', login, courseID, assignmentID, password, '0')
+    else
+      gradeSource('1', login, courseID, assignmentID, password, '1')
+    end
     redirect "/logs"
   end
   if params[:function] == "2"
@@ -84,16 +96,20 @@ post '/' do
     File.open('./scores.csv', "w") do |f|
       f.write(params['csvfile'][:tempfile].read)
     end
-    gradeSource('2', login, courseID, assignmentID, password)
+   if params[:overwrite] == "0"
+      gradeSource('2', login, courseID, assignmentID, password, '0')
+    else
+      gradeSource('2', login, courseID, assignmentID, password, '1')
+    end
     redirect "/logs"
   end
   if params[:function] == "3"
-    gradeSource('3', login, courseID, "null", password)
+    gradeSource('3', login, courseID, "null", password, '1')
     send_file "./Roster.csv", :filename => 'Roster.csv', :type => 'Application/octet-stream'
     redirect "/logs"
   end
   if params[:function] == "4"
-    gradeSource('4', login, courseID, "null", password)
+    gradeSource('4', login, courseID, "null", password, '1')
     send_file "./iClickerRoster.csv", :filename => 'iClickerRoster.csv', :type => 'Application/octet-stream'
     redirect "/logs"
   end
