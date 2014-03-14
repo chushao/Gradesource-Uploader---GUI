@@ -27,7 +27,7 @@ end
 
 # use a Python interpreter to do stuff.... because python FTW
 def gradeSource(ver, login, courseID, assignmentID, password, overwrite)
-  updateGradesource
+  # updateGradesource ##use this command if you want to download latest gradesource as well
   Rupy.start
   #Requires an adjustment to the library path
   sys = Rupy.import 'sys'
