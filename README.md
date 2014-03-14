@@ -6,7 +6,11 @@ Gui frontend of gradesource uploader.
 This application was written in Ruby and uses the Sinatra web-framework.  
 Currently due to an issue with LLVM/Clang (Xcode compiler), this application cannot be ran in Mac OSX.  
 However, it runs well in cloud services such as dotcloud, and Linux Distros such as CentOS and Ubuntu.  
-  
+
+
+Heroku Version:
+http://gradesource-uploader.herokuapp.com/
+
 Requirements:  
 Bundler => http://www.gembundler.com  
 Ruby 1.9.3 => http://www.ruby-lang.org/  
